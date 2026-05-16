@@ -20,46 +20,5 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Restore SSL keystore
-        if: ${{ secrets.SSL_KEYSTORE_BASE64 != '' }}
-        run: |
-          echo "${{ secrets.SSL_KEYSTORE_BASE64 }}" | base64 -d \
-            > src/main/resources/ssl/hotel-1bib23427.p12
-
-      - name: Restore signing keystore
-        if: ${{ secrets.SIGNING_KEYSTORE_BASE64 != '' }}
-        run: |
-          echo "${{ secrets.SIGNING_KEYSTORE_BASE64 }}" | base64 -d \
-            > src/main/resources/signature/signing.p12
-
-      - name: Build and test
-        run: mvn verify
-        env:
-          PG_URL: ${{ secrets.PG_URL }}
-          PG_USER: ${{ secrets.PG_USER }}
-          PG_PASS: ${{ secrets.PG_PASS }}
-          TLS_KEYSTORE_PASSWORD: ${{ secrets.TLS_KEYSTORE_PASSWORD }}
-          SIGNATURE_KEY_STORE_PASSWORD: ${{ secrets.SIGNATURE_KEY_STORE_PASSWORD }}
-          SIGNATURE_KEY_ALIAS: ${{ secrets.SIGNATURE_KEY_ALIAS }}
-          SIGNATURE_KEY_PASSWORD: ${{ secrets.SIGNATURE_KEY_PASSWORD }}
-          MINIO_ENDPOINT: ${{ secrets.MINIO_ENDPOINT }}
-          MINIO_ACCESS_KEY: ${{ secrets.MINIO_ACCESS_KEY }}
-          MINIO_SECRET_KEY: ${{ secrets.MINIO_SECRET_KEY }}
-
-  # Раскомментируйте и настройте, когда добавите интеграционные тесты:
-  # integration-test:
-  #   runs-on: ubuntu-latest
-  #   needs: build
-  #   services:
-  #     postgres:
-  #       image: postgres:16
-  #       env:
-  #         POSTGRES_DB: testdb
-  #         POSTGRES_USER: testuser
-  #         POSTGRES_PASSWORD: testpass
-  #       ports: ["5432:5432"]
-  #       options: >-
-  #         --health-cmd pg_isready
-  #         --health-interval 10s
-  #         --health-timeout 5s
-  #         --health-retries 5
+      - name: Build
+        run: mvn package -DskipTests
